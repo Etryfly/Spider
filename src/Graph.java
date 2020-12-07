@@ -6,6 +6,9 @@ import java.util.stream.IntStream;
 public class Graph {
 
     private int[][] matrix;
+    private ArrayList<Boolean> flies = new ArrayList<>();
+    private int spiderPos;
+
     public Graph(int vertexCount, int edgeCount, int weightSum) {
         int possibleEdgeCount = vertexCount * (vertexCount-1) / 2;
         if (possibleEdgeCount < edgeCount) throw new IllegalArgumentException("edgeCount > possible edge count");
@@ -38,21 +41,28 @@ public class Graph {
         }
 
         printGraphMatrix(this);
-
-
-
-
     }
 
-    public static void main(String[] args) {
-        Graph graph = new Graph(4, 6, 30);
-        Graph graph1 = new Graph(4, 3, 30);
-        printGraphMatrix(graph);
-        printGraphMatrix(graph1);
+    public void generateFlies(int countOfFlies) {
+        if (countOfFlies > matrix.length) throw new IllegalArgumentException();
+        flies.clear();
+        for (int i = 0; i < countOfFlies; i++) {
+            flies.add(true);
+        }
+        for (int i = countOfFlies; i < matrix.length; i++) {
+            flies.add(false);
+        }
+
+        Collections.shuffle(flies);
     }
 
+    public void generateSpider() {
+        Random random = new Random();
+        spiderPos = random.nextInt(matrix.length);
+        flies.set(spiderPos, false);
+    }
 
-    private static void printGraphMatrix(Graph graph) {
+    private static void printGraphMatrix(Graph graph) { // for debug
         for (int i = 0; i < graph.matrix.length; i++) {
             for (int j = 0; j < graph.matrix[i].length; j++) {
                 System.out.print(graph.matrix[i][j] + " ");
@@ -64,5 +74,10 @@ public class Graph {
 
     public int[][] getMatrix() {
         return matrix;
+    }
+
+
+    public ArrayList<Boolean> getFlies() {
+        return flies;
     }
 }

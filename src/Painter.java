@@ -16,48 +16,76 @@ import java.util.ArrayList;
 public class Painter extends AnimationTimer {
     public AnchorPane pane;
     public ArrayList<Point2D> vertex;
+    double curTime = 0;
+    double x;
+    double y;
+    int i = 0;
+    int steps;
+    int counter;
+    double dy;
+    double dx;
+    Group root;
     public Painter(AnchorPane p, ArrayList<Point2D> vertex) {
         pane = p;
         this.vertex = vertex;
+        root = new Group();
+
+        pane.getChildren().add(root);
     }
 
-    public void moveSpider(Point2D p1, Point2D p2, int t, int radius) {
-        // double dx = 10;
-        int step = 3;
+    public void setSpider(Point2D point) {
+        x = point.getX();
+        y = point.getY();
+        counter = 0;
+    }
+
+    public boolean moveSpider( int t, int radius) {
+        counter++;
+        y += dy;
+        x += dx;
+        if (counter >= steps) {
+            counter = 0;
+            return false;
+        }
+        return true;
+    }
+
+
+    @Override
+    public void handle(long l) {
+        System.out.println(i);
+            if (i > vertex.size() - 2) {
+                stop();
+            } else {
+                int t = 2000;
+                setSpiderDirection(vertex.get(i), vertex.get(i + 1), t);
+                if (!moveSpider(t, 20)) i++;
+                drawSpider(20);
+            }
+
+    }
+
+    private void drawSpider(int radius) {
+        Circle circle = new Circle();
+        circle.setRadius(radius / 8);
+        circle.setCenterY(y);
+        circle.setCenterX(x);
+        circle.setFill(Color.BLACK);
+
+        root.getChildren().add(circle);
+        System.out.println(x + " " + y);
+    }
+
+    public void setSpiderDirection(Point2D p1, Point2D p2, int t) {
         double x1  = p1.getX();
         double y1 = p1.getY();
         double x2 = p2.getX();
         double y2 = p2.getY();
-        int count = (int) (Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(x1 - x2, 2)) / step);
-        double dt = t*1.0 / count;
-        // double k = (y2 - y1)/(x2 - x1);
-        //double b = y1 - x1*(y2 - y1)/(x2 - x1);
-        //System.out.println(k + " " + b);
-        double dy = (y2 - y1) / count;
-        double dx = (x2 - x1) / count;
-        double[] x = new double[]{x1};
-        double[] y = new double[]{y1};
-        Group root = new Group();
-        pane.getChildren().add(root);
-        Timeline timeline = new Timeline (
-                new KeyFrame(
-                        Duration.millis(dt),
-                        ae -> {
+        steps = (int) (Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2)) / 3);
 
-                            Circle circle = new Circle();
-                            circle.setRadius(radius / 8);
-                            circle.setCenterY(y[0]);
-                            circle.setCenterX(x[0]);
-                            circle.setFill(Color.GREENYELLOW);
-                            y[0] += dy;
-                            x[0] += dx;
-                            root.getChildren().add(circle);
-                        }
-                )
-        );
 
-        timeline.setCycleCount(count); //Ограничим число повторений
-        timeline.play(); //Запускаем
+        dy = (y2 - y1) / steps;
+        dx = (x2 - x1) / steps;
     }
 
     public void plotGraph(Graph graph, int radius, ArrayList<Point2D> vertex) {
@@ -114,16 +142,5 @@ public class Painter extends AnimationTimer {
 
 
 
-    @Override
-    public void handle(long l) {
-        for (int i = 0; i < vertex.size() - 1; i++) {
-            int t = 2000;
-            moveSpider(vertex.get(i), vertex.get(i + 1), t, 100);
-            try {
-                Thread.sleep(1);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    }
+
 }

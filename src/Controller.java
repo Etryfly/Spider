@@ -27,6 +27,7 @@ public class Controller {
         ArrayList<Point2D> vertex = getPoint2DVertex(graph, 100);
         Painter painter = new Painter(pane, vertex);
         painter.plotGraph(graph, 100, vertex);
+        painter.setSpider(vertex.get(0));
         painter.start();
 
     }

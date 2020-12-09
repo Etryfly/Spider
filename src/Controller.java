@@ -17,24 +17,13 @@ import javafx.util.Duration;
 import java.util.ArrayList;
 
 public class Controller {
+    Painter painter;
 
     @FXML
     public Canvas canvas;
 
     @FXML
     public void StartOnClick() throws InterruptedException {
-        Graph graph = new Graph(5, 6, 30);
-        graph.generateFlies(3);
-        int radius = 10;
-        graph.generateSpider();
-        ArrayList<Integer> path = graph.getClosestFlyPath();
-        Painter painter = new Painter(canvas, graph, radius);
-        painter.initVertex();
-
-        painter.setSpider();
-        for (Integer i : path) {
-            System.out.println(i);
-        }
         painter.start();
 
     }
@@ -46,6 +35,19 @@ public class Controller {
 
     @FXML
     public void SettingsOnClick() {
+        Graph graph = new Graph(5, 6, 30);
+        graph.generateFlies(3);
+        int radius = 10;
+        graph.generateSpider();
+        ArrayList<Integer> path = graph.getClosestFlyPath();
+        painter = new Painter(canvas, graph, radius);
+        painter.initVertex();
+
+        painter.setSpider();
+        painter.plotGraph(graph);
+        for (Integer i : path) {
+            System.out.println(i);
+        }
 
     }
 

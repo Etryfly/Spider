@@ -87,8 +87,8 @@ public class Painter extends AnimationTimer {
         vertex = getPoint2DVertex(graph);
     }
 
-    private void drawSpider() {
-        context.setFill(Color.BLACK);
+    public void drawSpider() {
+        context.setFill(Color.GREEN);
         context.fillOval(x - radius, y-radius, 2*radius, 2*radius);
     }
 
@@ -110,7 +110,6 @@ public class Painter extends AnimationTimer {
 
     public void plotGraph(Graph graph) {
 
-        int spiderIndex = graph.getSpiderPos();
         ArrayList<Boolean> flies = graph.getFlies();
 
 
@@ -126,7 +125,7 @@ public class Painter extends AnimationTimer {
             } else {
                 context.setFill(Color.BLACK);
             }
-            if (i == spiderIndex)  context.setFill(Color.GREEN);
+
 
             context.fillOval(x - radius, y-radius, 2*radius, 2*radius);
 
@@ -151,6 +150,8 @@ public class Painter extends AnimationTimer {
 
             }
         }
+
+        drawSpider();
     }
 
     public ArrayList<Point2D> getPoint2DVertex(Graph graph) {

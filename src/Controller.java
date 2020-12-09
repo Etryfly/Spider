@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
@@ -18,17 +19,17 @@ import java.util.ArrayList;
 public class Controller {
 
     @FXML
-    public AnchorPane pane;
+    public Canvas canvas;
 
     @FXML
     public void StartOnClick() throws InterruptedException {
         Graph graph = new Graph(5, 6, 30);
         graph.generateFlies(3);
-        ArrayList<Point2D> vertex = getPoint2DVertex(graph, 100);
+        int radius = 10;
         graph.generateSpider();
         ArrayList<Integer> path = graph.getClosestFlyPath();
-        Painter painter = new Painter(pane, vertex, graph);
-        painter.plotGraph(graph, 100, vertex);
+        Painter painter = new Painter(canvas, graph, radius);
+        painter.initVertex();
 
         painter.setSpider();
         for (Integer i : path) {
@@ -57,23 +58,7 @@ public class Controller {
 
 
 
-    public ArrayList<Point2D> getPoint2DVertex(Graph graph, int radius) {
-        int vertexCount = graph.getMatrix().length;
-        ArrayList<Point2D> vertex = new ArrayList<>();
-        double phi = 0;
-        double dPhi = ((2 * Math.PI / (vertexCount)));
 
-        for (int i = 0; i < vertexCount; i++) {
-
-            int x = (int) (radius * Math.cos(phi) + pane.getWidth() / 2);
-            int y = (int) (radius * Math.sin(phi) + pane.getHeight() / 2);
-            Point2D v = new Point2D(x, y);
-            vertex.add(v);
-            phi += dPhi;
-        }
-
-        return vertex;
-    }
 
 
 }

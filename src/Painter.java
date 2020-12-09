@@ -4,6 +4,8 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -14,7 +16,7 @@ import javafx.util.Duration;
 import java.util.ArrayList;
 
 public class Painter extends AnimationTimer {
-    public AnchorPane pane;
+    public Canvas canvas;
     public ArrayList<Point2D> vertex;
     double curTime = 0;
     double x;
@@ -26,14 +28,14 @@ public class Painter extends AnimationTimer {
     double dx;
     Graph graph;
     ArrayList<Integer> path;
-    Group root;
-    public Painter(AnchorPane p, ArrayList<Point2D> vertex, Graph graph) {
-        pane = p;
+    int radius;
+    GraphicsContext context;
+    public Painter(Canvas canvas, Graph graph, int radius) {
+        context = canvas.getGraphicsContext2D();
+        this.canvas = canvas;
         this.graph = graph;
-        this.vertex = vertex;
-        root = new Group();
+        this.radius = radius;
         calculateNextPath();
-        pane.getChildren().add(root);
     }
 
 
@@ -45,7 +47,7 @@ public class Painter extends AnimationTimer {
         counter = 0;
     }
 
-    public boolean moveSpider( int t, int radius) {
+    public boolean moveSpider( int t) {
         counter++;
         y += dy;
         x += dx;
@@ -59,12 +61,14 @@ public class Painter extends AnimationTimer {
 
     @Override
     public void handle(long l) {
+        context.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        plotGraph(graph);
             if (path.size() == 1) { // TODO fix
                 stop();
             } else {
                 int t = 2000;
                 setSpiderDirection(vertex.get(path.get(i)), vertex.get(path.get(i + 1)), t);
-                if (!moveSpider(t, 20)) {
+                if (!moveSpider(t)) {
                     int pos = path.get(i + 1);
                     graph.removeFly(pos);
                     if (path.size() == 2) {
@@ -74,20 +78,18 @@ public class Painter extends AnimationTimer {
                         path.remove(0);
                     }
                 }
-                drawSpider(20);
+                drawSpider();
             }
 
     }
 
-    private void drawSpider(int radius) {
-        Circle circle = new Circle();
-        circle.setRadius(radius / 8);
-        circle.setCenterY(y);
-        circle.setCenterX(x);
-        circle.setFill(Color.BLACK);
+    public void initVertex() {
+        vertex = getPoint2DVertex(graph);
+    }
 
-        root.getChildren().add(circle);
-
+    private void drawSpider() {
+        context.setFill(Color.BLACK);
+        context.fillOval(x - radius, y-radius, 2*radius, 2*radius);
     }
 
     private void calculateNextPath() {
@@ -106,31 +108,28 @@ public class Painter extends AnimationTimer {
         dx = (x2 - x1) / steps;
     }
 
-    public void plotGraph(Graph graph, int radius, ArrayList<Point2D> vertex) {
+    public void plotGraph(Graph graph) {
 
         int spiderIndex = graph.getSpiderPos();
         ArrayList<Boolean> flies = graph.getFlies();
-        Group root = new Group();
-
-        pane.getChildren().add(root);
 
 
         for (int i = 0; i < vertex.size(); i++) {
-            Circle circle = new Circle();
             int x = (int) vertex.get(i).getX();
             int y = (int) vertex.get(i).getY();
 
-            circle.setCenterX(x);
-            circle.setCenterY(y);
-            if (flies.get(i)) {
-                circle.setFill(Color.RED);
-            } else {
-                circle.setFill(Color.BLACK);
-            }
-            if (i == spiderIndex) circle.setFill(Color.GREEN);
-            circle.setRadius(radius / 8);
 
-            root.getChildren().add(circle);
+
+
+            if (flies.get(i)) {
+                context.setFill(Color.RED);
+            } else {
+                context.setFill(Color.BLACK);
+            }
+            if (i == spiderIndex)  context.setFill(Color.GREEN);
+
+            context.fillOval(x - radius, y-radius, 2*radius, 2*radius);
+
         }
 
 
@@ -145,28 +144,32 @@ public class Painter extends AnimationTimer {
                     double x2 = second.getX();
                     double y2 = second.getY();
 
-                    Line line = new Line(x1, y1, x2, y2);
+                    context.strokeLine(x1,y1,x2,y2);
+                    context.strokeText(String.valueOf(edgeWeight),(x1 + x2) / 2,(y1 + y2) / 2 + 15  );
 
-                    Text text = new Text();
-                    text.setText(String.valueOf(edgeWeight));
-                    text.setX((x1 + x2) / 2);
-                    text.setY((y1 + y2) / 2 + 15);
-
-                    //DEBUG
-
-                    Text debug = new Text();
-                    debug.setText(String.valueOf(i));
-                    debug.setX(x1 + 10);
-                    debug.setY(y1 + 10);
-                    root.getChildren().add(debug);
-                    // /DEBUG
-
-                    root.getChildren().add(line);
-                    root.getChildren().add(text);
                 }
 
             }
         }
+    }
+
+    public ArrayList<Point2D> getPoint2DVertex(Graph graph) {
+        int vertexCount = graph.getMatrix().length;
+        int r = radius * 10;
+        ArrayList<Point2D> vertex = new ArrayList<>();
+        double phi = 0;
+        double dPhi = ((2 * Math.PI / (vertexCount)));
+
+        for (int i = 0; i < vertexCount; i++) {
+
+            int x = (int) (r * Math.cos(phi) + canvas.getWidth() / 2);
+            int y = (int) (r * Math.sin(phi) + canvas.getHeight() / 2);
+            Point2D v = new Point2D(x, y);
+            vertex.add(v);
+            phi += dPhi;
+        }
+
+        return vertex;
     }
 
 

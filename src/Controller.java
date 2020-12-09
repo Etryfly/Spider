@@ -25,10 +25,16 @@ public class Controller {
         Graph graph = new Graph(5, 6, 30);
         graph.generateFlies(3);
         ArrayList<Point2D> vertex = getPoint2DVertex(graph, 100);
+        graph.generateSpider();
+        ArrayList<Integer> path = graph.getClosestFlyPath();
         Painter painter = new Painter(pane, vertex);
         painter.plotGraph(graph, 100, vertex);
-        painter.setSpider(vertex.get(0));
-        painter.start();
+
+        painter.setSpider(path);
+        for (Integer i : path) {
+            System.out.println(i);
+        }
+   //     painter.start();
 
     }
 

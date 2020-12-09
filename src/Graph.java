@@ -1,6 +1,7 @@
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Random;
+import javafx.util.Pair;
+
+import java.lang.reflect.Array;
+import java.util.*;
 import java.util.stream.IntStream;
 
 public class Graph {
@@ -8,6 +9,11 @@ public class Graph {
     private int[][] matrix;
     private ArrayList<Boolean> flies = new ArrayList<>();
     private int spiderPos;
+
+
+    public int getSpiderPos() {
+        return spiderPos;
+    }
 
     public Graph(int vertexCount, int edgeCount, int weightSum) {
         int possibleEdgeCount = vertexCount * (vertexCount-1) / 2;
@@ -60,6 +66,118 @@ public class Graph {
         Random random = new Random();
         spiderPos = random.nextInt(matrix.length);
         flies.set(spiderPos, false);
+    }
+
+    public ArrayList<Integer> getClosestFlyPath() {
+
+        int[] p = deikstra(spiderPos);
+        int min = Integer.MAX_VALUE;
+        int index = 0;
+        for (int i = 0; i < flies.size(); i++) {
+            if (flies.get(i)) {
+                int pathSize = countPath(getShortestPath(p, i));
+                if (pathSize < min) {
+                    min = pathSize;
+                    index = i;
+                }
+            }
+        }
+
+        System.out.println("Closest: " + index);
+
+
+        System.out.println("D: ");
+        for (int i = 0; i < p.length; i++) {
+            System.out.println(p[i]);
+        }
+
+        return getShortestPath(p, index);
+    }
+
+    private int countPath(ArrayList<Integer> path) {
+        int size = 0;
+        for (int i = 0; i < path.size(); i++) {
+            size += matrix[spiderPos][path.get(i)];
+        }
+
+        //REMOVE
+        System.out.println("PATCHES: ");
+        for (int i = 0; i < path.size(); i++) {
+            System.out.println(path.get(i));
+        }
+        System.out.println("Size " + size);
+
+        return size;
+    }
+
+    private ArrayList<Integer> getShortestPath(int[] p, int end) {
+        ArrayList<Integer> path = new ArrayList<>();
+        int cur = end;
+        path.add(cur);
+
+        while (p[cur] != -1) {
+            cur = p[cur];
+            path.add(cur);
+        }
+
+        Collections.reverse(path);
+
+        return path;
+
+    }
+
+    private int[] deikstra(int i) {// TODO: bug in deikstra, return array of (-1)
+        int[] ans = new int[matrix.length];
+        int[] pr = new int[matrix.length];
+        for (int j = 0; j < matrix.length; j++) {
+            ans[j] = Integer.MAX_VALUE;
+            pr[j] = -1;
+        }
+        ans[i] = 0;
+        PriorityQueue<Pair<Integer, Integer>> queue = new PriorityQueue<>(matrix.length, new Comparator<Pair<Integer, Integer>>() {
+            @Override
+            public int compare(Pair<Integer, Integer> o1, Pair<Integer, Integer> o2) {
+                return o1.getValue().compareTo(o2.getValue());
+            }
+        });
+        queue.add(new Pair<Integer, Integer>(i, 0));
+
+        while (!queue.isEmpty()) {
+            Pair<Integer, Integer> pair = queue.poll();
+
+            if (ans[pair.getKey()] < pair.getValue()) {
+                continue;
+            }
+
+            for (Pair<Integer, Integer> vertex : getGraphAsPairs().get(pair.getKey())) {
+                int n_dst = pair.getValue() + vertex.getValue();
+                int u = vertex.getKey();
+                if (n_dst < ans[u]) {
+                    ans[u] = n_dst;
+                    queue.add(new Pair(u, n_dst));
+                    pr[u] = pair.getKey();
+                }
+            }
+        }
+
+        return pr;
+
+    }
+
+    private ArrayList<ArrayList<Pair<Integer, Integer>>> getGraphAsPairs() {
+        ArrayList<ArrayList<Pair<Integer, Integer>>> result = new ArrayList<>();
+        for (int i = 0; i < matrix.length; i++) {
+            ArrayList<Pair<Integer, Integer>> arr = new ArrayList<>();
+            for (int j = i + 1; j < matrix.length; j++) {
+
+                if (matrix[i][j] != 0)
+                    arr.add(new Pair<>(i, matrix[i][j]));
+            }
+            result.add(arr);
+
+        }
+
+        return result;
     }
 
     private static void printGraphMatrix(Graph graph) { // for debug

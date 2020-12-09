@@ -24,6 +24,7 @@ public class Painter extends AnimationTimer {
     int counter;
     double dy;
     double dx;
+    ArrayList<Integer> path;
     Group root;
     public Painter(AnchorPane p, ArrayList<Point2D> vertex) {
         pane = p;
@@ -33,7 +34,9 @@ public class Painter extends AnimationTimer {
         pane.getChildren().add(root);
     }
 
-    public void setSpider(Point2D point) {
+    public void setSpider(ArrayList<Integer> path) {
+        this.path = path;
+        Point2D point = vertex.get(path.get(0));
         x = point.getX();
         y = point.getY();
         counter = 0;
@@ -54,11 +57,11 @@ public class Painter extends AnimationTimer {
     @Override
     public void handle(long l) {
         System.out.println(i);
-            if (i > vertex.size() - 2) {
+            if (i > path.size() - 1) {
                 stop();
             } else {
                 int t = 2000;
-                setSpiderDirection(vertex.get(i), vertex.get(i + 1), t);
+                setSpiderDirection(vertex.get(path.get(i)), vertex.get(path.get(i + 1)), t);
                 if (!moveSpider(t, 20)) i++;
                 drawSpider(20);
             }
@@ -90,7 +93,7 @@ public class Painter extends AnimationTimer {
 
     public void plotGraph(Graph graph, int radius, ArrayList<Point2D> vertex) {
 
-
+        int spiderIndex = graph.getSpiderPos();
         ArrayList<Boolean> flies = graph.getFlies();
         Group root = new Group();
 
@@ -109,6 +112,7 @@ public class Painter extends AnimationTimer {
             } else {
                 circle.setFill(Color.BLACK);
             }
+            if (i == spiderIndex) circle.setFill(Color.GREEN);
             circle.setRadius(radius / 8);
 
             root.getChildren().add(circle);
@@ -132,6 +136,16 @@ public class Painter extends AnimationTimer {
                     text.setText(String.valueOf(edgeWeight));
                     text.setX((x1 + x2) / 2);
                     text.setY((y1 + y2) / 2 + 15);
+
+                    //DEBUG
+
+                    Text debug = new Text();
+                    debug.setText(String.valueOf(i));
+                    debug.setX(x1 + 10);
+                    debug.setY(y1 + 10);
+                    root.getChildren().add(debug);
+                    // /DEBUG
+
                     root.getChildren().add(line);
                     root.getChildren().add(text);
                 }

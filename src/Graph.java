@@ -83,13 +83,7 @@ public class Graph {
             }
         }
 
-        System.out.println("Closest: " + index);
 
-
-        System.out.println("D: ");
-        for (int i = 0; i < p.length; i++) {
-            System.out.println(p[i]);
-        }
 
         return getShortestPath(p, index);
     }
@@ -99,13 +93,6 @@ public class Graph {
         for (int i = 0; i < path.size(); i++) {
             size += matrix[spiderPos][path.get(i)];
         }
-
-        //REMOVE
-        System.out.println("PATCHES: ");
-        for (int i = 0; i < path.size(); i++) {
-            System.out.println(path.get(i));
-        }
-        System.out.println("Size " + size);
 
         return size;
     }
@@ -126,7 +113,7 @@ public class Graph {
 
     }
 
-    private int[] deikstra(int i) {// TODO: bug in deikstra, return array of (-1)
+    private int[] deikstra(int i) {
         int[] ans = new int[matrix.length];
         int[] pr = new int[matrix.length];
         for (int j = 0; j < matrix.length; j++) {
@@ -152,6 +139,7 @@ public class Graph {
             for (Pair<Integer, Integer> vertex : getGraphAsPairs().get(pair.getKey())) {
                 int n_dst = pair.getValue() + vertex.getValue();
                 int u = vertex.getKey();
+                System.out.println("vertex " + u);
                 if (n_dst < ans[u]) {
                     ans[u] = n_dst;
                     queue.add(new Pair(u, n_dst));
@@ -168,10 +156,10 @@ public class Graph {
         ArrayList<ArrayList<Pair<Integer, Integer>>> result = new ArrayList<>();
         for (int i = 0; i < matrix.length; i++) {
             ArrayList<Pair<Integer, Integer>> arr = new ArrayList<>();
-            for (int j = i + 1; j < matrix.length; j++) {
+            for (int j =0; j < matrix.length; j++) {
 
                 if (matrix[i][j] != 0)
-                    arr.add(new Pair<>(i, matrix[i][j]));
+                    arr.add(new Pair<>(j, matrix[i][j]));
             }
             result.add(arr);
 

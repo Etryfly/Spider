@@ -27,14 +27,14 @@ public class Controller {
         ArrayList<Point2D> vertex = getPoint2DVertex(graph, 100);
         graph.generateSpider();
         ArrayList<Integer> path = graph.getClosestFlyPath();
-        Painter painter = new Painter(pane, vertex);
+        Painter painter = new Painter(pane, vertex, graph);
         painter.plotGraph(graph, 100, vertex);
 
-        painter.setSpider(path);
+        painter.setSpider();
         for (Integer i : path) {
             System.out.println(i);
         }
-   //     painter.start();
+        painter.start();
 
     }
 

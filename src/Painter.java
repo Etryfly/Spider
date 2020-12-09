@@ -24,19 +24,22 @@ public class Painter extends AnimationTimer {
     int counter;
     double dy;
     double dx;
+    Graph graph;
     ArrayList<Integer> path;
     Group root;
-    public Painter(AnchorPane p, ArrayList<Point2D> vertex) {
+    public Painter(AnchorPane p, ArrayList<Point2D> vertex, Graph graph) {
         pane = p;
+        this.graph = graph;
         this.vertex = vertex;
         root = new Group();
-
+        calculateNextPath();
         pane.getChildren().add(root);
     }
 
-    public void setSpider(ArrayList<Integer> path) {
-        this.path = path;
-        Point2D point = vertex.get(path.get(0));
+
+
+    public void setSpider() {
+        Point2D point =vertex.get(graph.getSpiderPos());
         x = point.getX();
         y = point.getY();
         counter = 0;
@@ -56,13 +59,21 @@ public class Painter extends AnimationTimer {
 
     @Override
     public void handle(long l) {
-        System.out.println(i);
-            if (i > path.size() - 1) {
+            if (path.size() == 1) { // TODO fix
                 stop();
             } else {
                 int t = 2000;
                 setSpiderDirection(vertex.get(path.get(i)), vertex.get(path.get(i + 1)), t);
-                if (!moveSpider(t, 20)) i++;
+                if (!moveSpider(t, 20)) {
+                    int pos = path.get(i + 1);
+                    graph.removeFly(pos);
+                    if (path.size() == 2) {
+                        graph.setSpiderPos(pos);
+                        calculateNextPath();
+                    } else {
+                        path.remove(0);
+                    }
+                }
                 drawSpider(20);
             }
 
@@ -76,7 +87,11 @@ public class Painter extends AnimationTimer {
         circle.setFill(Color.BLACK);
 
         root.getChildren().add(circle);
-        System.out.println(x + " " + y);
+
+    }
+
+    private void calculateNextPath() {
+        path = graph.getClosestFlyPath();
     }
 
     public void setSpiderDirection(Point2D p1, Point2D p2, int t) {

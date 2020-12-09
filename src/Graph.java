@@ -15,6 +15,10 @@ public class Graph {
         return spiderPos;
     }
 
+    public void removeFly(int pos) {
+        flies.set(pos, false);
+    }
+
     public Graph(int vertexCount, int edgeCount, int weightSum) {
         int possibleEdgeCount = vertexCount * (vertexCount-1) / 2;
         if (possibleEdgeCount < edgeCount) throw new IllegalArgumentException("edgeCount > possible edge count");
@@ -60,6 +64,10 @@ public class Graph {
         }
 
         Collections.shuffle(flies);
+    }
+
+    public void setSpiderPos(int pos) {
+        spiderPos = pos;
     }
 
     public void generateSpider() {
@@ -139,7 +147,6 @@ public class Graph {
             for (Pair<Integer, Integer> vertex : getGraphAsPairs().get(pair.getKey())) {
                 int n_dst = pair.getValue() + vertex.getValue();
                 int u = vertex.getKey();
-                System.out.println("vertex " + u);
                 if (n_dst < ans[u]) {
                     ans[u] = n_dst;
                     queue.add(new Pair(u, n_dst));

@@ -23,7 +23,6 @@ public class Painter extends AnimationTimer {
     double y;
     private ArrayList<Integer> visitedVertexIndex;
     private ArrayList<Pair<Integer, Integer>> visitedEdges;
-    int i = 0;
     int steps;
     int t, curT;
     int counter;
@@ -74,6 +73,33 @@ public class Painter extends AnimationTimer {
         isStopped = true;
     }
 
+    private void tick() {
+        int prev = path.get(0);
+        int next = path.get(1);
+        setSpiderDirection(vertex.get(prev), vertex.get(next), graph.getMatrix()[prev][next]);
+        if (!moveSpider()) {
+            try {
+                Thread.sleep(1000);
+                t -= 1000;
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            if (graph.checkFly(next)) {
+                countOfCatchedFly++;
+            }
+            graph.removeFly(next);
+            visitedVertexIndex.add(next);
+            visitedEdges.add(new Pair<>(prev, next));
+            if (path.size() == 2) {
+                graph.setSpiderPos(next);
+                calculateNextPath();
+            } else {
+                path.remove(0);
+            }
+        }
+        drawSpider();
+    }
+
 
     @Override
     public void handle(long l) {
@@ -82,29 +108,7 @@ public class Painter extends AnimationTimer {
         if (path.size() <= 1 || !graph.isFliesAlive() || t <= 0 || isStopped) {
             stop();
         } else {
-            setSpiderDirection(vertex.get(path.get(i)), vertex.get(path.get(i + 1)), graph.getMatrix()[path.get(i)][path.get(i + 1)]);
-            if (!moveSpider()) {
-                try {
-                    Thread.sleep(1000);
-                    t -= 1000;
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                int pos = path.get(i + 1);
-                if (graph.checkFly(pos)) {
-                    countOfCatchedFly++;
-                }
-                graph.removeFly(pos);
-                visitedVertexIndex.add(pos);
-                visitedEdges.add(new Pair<>(path.get(i), pos));
-                if (path.size() == 2) {
-                    graph.setSpiderPos(pos);
-                    calculateNextPath();
-                } else {
-                    path.remove(0);
-                }
-            }
-            drawSpider();
+           tick();
         }
 
     }
@@ -172,8 +176,8 @@ public class Painter extends AnimationTimer {
                     double y1 = first.getY();
                     double x2 = second.getX();
                     double y2 = second.getY();
-                    Pair edgeForCheck1 = new Pair(i, j);
-                    Pair edgeForCheck2 = new Pair(j, i);
+                    Pair<Integer, Integer> edgeForCheck1 = new Pair<>(i, j);
+                    Pair<Integer, Integer> edgeForCheck2 = new Pair<>(j, i);
                     if (visitedEdges.contains(edgeForCheck1) || visitedEdges.contains(edgeForCheck2)) {
                         context.setStroke(Color.RED);
                     } else {

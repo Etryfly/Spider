@@ -12,8 +12,8 @@
         <menus>
           <Menu mnemonicParsing="false" text="Action">
             <items>
-              <MenuItem mnemonicParsing="false" onAction="#StartOnClick" text="Start" />
-                  <MenuItem mnemonicParsing="false" onAction="#StopOnClick" text="Stop" />
+              <MenuItem fx:id="startButton" mnemonicParsing="false" onAction="#StartOnClick" text="Start" />
+                  <MenuItem fx:id="stopButton" mnemonicParsing="false" onAction="#StopOnClick" text="Stop" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Settings">
@@ -21,7 +21,6 @@
               <MenuItem mnemonicParsing="false" onAction="#SettingsOnClick" text="Settings" />
                   <MenuItem mnemonicParsing="false" text="Load settings" />
                   <MenuItem mnemonicParsing="false" text="Save settings" />
-                  <MenuItem mnemonicParsing="false" text="Unspecified Action" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Web">

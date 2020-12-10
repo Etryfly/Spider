@@ -49,7 +49,9 @@ public class Painter extends AnimationTimer {
 
     public void setSpider(int t) {
         Point2D point = vertex.get(graph.getSpiderPos());
+        if (graph.checkFly(graph.getSpiderPos())) countOfCatchedFly ++;
         visitedVertexIndex.add(graph.getSpiderPos());
+
         x = point.getX();
         y = point.getY();
         counter = 0;

@@ -10,6 +10,14 @@ public class Graph {
     private ArrayList<Boolean> flies = new ArrayList<>();
     private int spiderPos;
 
+    public boolean isFliesAlive() {
+        for (Boolean fly : flies) {
+            if (fly) return true;
+        }
+
+        return false;
+    }
+
 
     public int getSpiderPos() {
         return spiderPos;
@@ -17,6 +25,10 @@ public class Graph {
 
     public void removeFly(int pos) {
         flies.set(pos, false);
+    }
+
+    public boolean checkFly(int pos) {
+        return flies.get(pos);
     }
 
     public Graph(int vertexCount, int edgeCount, int weightSum) {

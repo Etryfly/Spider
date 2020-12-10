@@ -30,7 +30,7 @@ public class Controller {
 
     @FXML
     public void StopOnClick() {
-
+        painter.setStop();
     }
 
     @FXML
@@ -43,7 +43,7 @@ public class Controller {
         painter = new Painter(canvas, graph, radius);
         painter.initVertex();
 
-        painter.setSpider();
+        painter.setSpider(20*1000);
         painter.plotGraph(graph);
         for (Integer i : path) {
             System.out.println(i);
@@ -51,11 +51,7 @@ public class Controller {
 
     }
 
-    @FXML
-    public void initialize() {
 
-
-    }
 
 
 

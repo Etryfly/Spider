@@ -25,8 +25,8 @@
           </Menu>
           <Menu mnemonicParsing="false" text="Web">
             <items>
-              <MenuItem mnemonicParsing="false" text="Save web" />
-                  <MenuItem mnemonicParsing="false" text="Load web" />
+              <MenuItem mnemonicParsing="false" onAction="#SaveWebOnClick" text="Save web" />
+                  <MenuItem mnemonicParsing="false" onAction="#LoadWebOnClick" text="Load web" />
             </items>
           </Menu>
         </menus>

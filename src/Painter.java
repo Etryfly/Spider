@@ -42,8 +42,13 @@ public class Painter extends AnimationTimer {
         this.canvas = canvas;
         this.graph = graph;
         this.radius = radius;
+
         countOfCatchedFly = 0;
         calculateNextPath();
+    }
+
+    public Graph getGraph() {
+        return graph;
     }
 
 

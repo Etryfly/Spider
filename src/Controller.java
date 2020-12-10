@@ -1,11 +1,6 @@
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Point2D;
-import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -13,7 +8,6 @@ import javafx.scene.control.MenuItem;
 
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -85,9 +79,6 @@ public class Controller {
 
         painter.setSpider(settings.getTime()*1000);
         painter.plotGraph(graph);
-        for (Integer i : path) {
-            System.out.println(i);
-        }
     }
 
 
@@ -116,6 +107,43 @@ public class Controller {
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
                 writer.write(settings.toString());
                 writer.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @FXML
+    public void SaveWebOnClick(ActionEvent actionEvent) {
+        FileChooser fileChooser = new FileChooser();
+
+        File file = fileChooser.showSaveDialog(new Stage());
+
+        if (file != null) {
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+                writer.write(painter.getGraph().getWeb().toString());
+                writer.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @FXML
+    public void LoadWebOnClick(ActionEvent actionEvent) {
+        FileChooser fileChooser = new FileChooser();
+
+        File file = fileChooser.showOpenDialog(new Stage());
+
+        if (file != null) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+                Web web = new Web(reader.readLine());
+                Graph graph = new Graph(web);
+                int radius = 10;
+                painter = new Painter(canvas, graph, radius);
+                painter.initVertex();
+                painter.setSpider(1000*1000);
+                painter.plotGraph(graph);
             } catch (IOException e) {
                 e.printStackTrace();
             }

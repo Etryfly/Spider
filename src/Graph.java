@@ -31,6 +31,12 @@ public class Graph {
         return flies.get(pos);
     }
 
+    public Graph(Web web) {
+        matrix = web.getMatrix();
+        flies = web.getFlies();
+        setSpiderPos(web.getSpiderPos());
+    }
+
     public Graph(int vertexCount, int edgeCount, int weightSum) {
         int possibleEdgeCount = vertexCount * (vertexCount-1) / 2;
         if (possibleEdgeCount < edgeCount) throw new IllegalArgumentException("edgeCount > possible edge count");
@@ -65,6 +71,10 @@ public class Graph {
         printGraphMatrix(this);
     }
 
+    public Web getWeb() {
+        return new Web(matrix, spiderPos, flies);
+    }
+
     public void generateFlies(int countOfFlies) {
         if (countOfFlies > matrix.length) throw new IllegalArgumentException();
         flies.clear();
@@ -80,6 +90,7 @@ public class Graph {
 
     public void setSpiderPos(int pos) {
         spiderPos = pos;
+        flies.set(spiderPos, false);
     }
 
     public void generateSpider() {

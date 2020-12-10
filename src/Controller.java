@@ -1,6 +1,7 @@
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
@@ -10,10 +11,11 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.MenuItem;
 
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 
 public class Controller {
@@ -55,14 +57,16 @@ public class Controller {
             e.printStackTrace();
         }
         SettingsController settingsController = fxmlLoader.getController();
+        settingsController.load(settings);
         Scene scene = new Scene(root);
         Stage stage = new Stage();
         stage.setTitle("Settings");
         stage.setScene(scene);
+
         stage.showAndWait();
         settings = settingsController.settings;
-        prepareGraph(settings.getVertex(), settings.getEdges(), settings.getSum(),
-                settings.getFlies(), settings.getTime());
+
+        prepareGraph(settings);
         startButton.setDisable(false);
         stopButton.setDisable(true);
     }
@@ -70,16 +74,16 @@ public class Controller {
 
 
 
-    private void prepareGraph(int vertexCount, int edgeCount, int weightSum, int countOfFlies, int time) {
-        Graph graph = new Graph(vertexCount, edgeCount, weightSum);
-        graph.generateFlies( countOfFlies);
+    private void prepareGraph(Settings settings) {
+        Graph graph = new Graph( settings.getVertex(), settings.getEdges(), settings.getSum());
+        graph.generateFlies(  settings.getFlies());
         int radius = 10;
         graph.generateSpider();
         ArrayList<Integer> path = graph.getClosestFlyPath();
         painter = new Painter(canvas, graph, radius);
         painter.initVertex();
 
-        painter.setSpider(time*1000);
+        painter.setSpider(settings.getTime()*1000);
         painter.plotGraph(graph);
         for (Integer i : path) {
             System.out.println(i);
@@ -87,10 +91,36 @@ public class Controller {
     }
 
 
+    public void LoadSettingsOnClick(ActionEvent actionEvent) {
+        FileChooser fileChooser = new FileChooser();
 
+        File file = fileChooser.showOpenDialog(new Stage());
 
+        if (file != null) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+                settings = new Settings(reader.readLine());
+                prepareGraph(settings);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
 
+    }
 
+    public void SaveSettingsOnClick(ActionEvent actionEvent) {
+        FileChooser fileChooser = new FileChooser();
+
+        File file = fileChooser.showSaveDialog(new Stage());
+
+        if (file != null) {
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+                writer.write(settings.toString());
+                writer.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }
 
 

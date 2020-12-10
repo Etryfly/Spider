@@ -32,5 +32,17 @@ public class SettingsController {
 
     @FXML
     public void initialize() {
+
+    }
+
+    public void load(Settings s) {
+        settings = s;
+        if (settings != null) {
+            vertexField.setText(String.valueOf(settings.getVertex()));
+            edgesField.setText(String.valueOf(settings.getEdges()));
+            fliesField.setText(String.valueOf(settings.getFlies()));
+            sumField.setText(String.valueOf(settings.getSum()));
+            timeField.setText(String.valueOf(settings.getTime()));
+        }
     }
 }

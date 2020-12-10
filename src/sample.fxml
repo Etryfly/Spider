@@ -19,8 +19,8 @@
           <Menu mnemonicParsing="false" text="Settings">
             <items>
               <MenuItem mnemonicParsing="false" onAction="#SettingsOnClick" text="Settings" />
-                  <MenuItem mnemonicParsing="false" text="Load settings" />
-                  <MenuItem mnemonicParsing="false" text="Save settings" />
+                  <MenuItem mnemonicParsing="false" onAction="#LoadSettingsOnClick" text="Load settings" />
+                  <MenuItem mnemonicParsing="false" onAction="#SaveSettingsOnClick" text="Save settings" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Web">
